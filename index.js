@@ -29,10 +29,10 @@ const Simulation = mongoose.model("simulation", {
   userSituation: String,
   city: String,
   mail: String,
-  acquisitionValue: Number,
+  goodPrice: Number,
   buildingCosts: Number,
   charges: Number,
-  totalAmount: Number,
+  total: Number,
   tracking: String
 });
 
@@ -52,11 +52,11 @@ app.post("/save", async (req, res) => {
     goodUsage: req.fields.goodUsage,
     userSituation: req.fields.userSituation,
     city: req.fields.city,
-    mail: req.fields.mail,
-    acquisitionValue: req.fields.acquisitionValue,
+    email: req.fields.email,
+    goodPrice: req.fields.goodPrice,
     buildingCosts: req.fields.buildingCosts,
     charges: req.fields.charges,
-    totalAmount: req.fields.totalAmount,
+    total: req.fields.total,
     tracking: generator.generate({
       length: 8,
       numbers: true,
@@ -69,7 +69,7 @@ app.post("/save", async (req, res) => {
     mg.messages().send(
       {
         from: "Mailgun Sandbox <postmaster@" + DOMAIN + ">",
-        to: newSimulation.mail,
+        to: newSimulation.email,
         subject: "Simulation by tomaks",
         text: JSON.stringify(newSimulation)
       },

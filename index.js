@@ -46,41 +46,56 @@ app.get("/backoffice", async (req, res) => {
 });
 
 app.post("/save", async (req, res) => {
-  const newSimulation = new Simulation({
-    goodType: req.fields.goodType,
-    goodCondition: req.fields.goodCondition,
-    goodUsage: req.fields.goodUsage,
-    userSituation: req.fields.userSituation,
-    city: req.fields.city,
-    email: req.fields.email,
-    goodPrice: req.fields.goodPrice,
-    buildingCosts: req.fields.buildingCosts,
-    charges: req.fields.charges,
-    total: req.fields.total,
-    tracking: generator.generate({
-      length: 8,
-      numbers: true,
-      uppercase: false,
-      exclude: "abcdefghijklmnopqrstuvwxyz"
-    })
-  });
-  try {
-    await newSimulation.save();
-    mg.messages().send(
-      {
-        from: "Mailgun Sandbox <postmaster@" + DOMAIN + ">",
-        to: newSimulation.email,
-        subject: "Simulation by tomaks",
-        text: JSON.stringify(newSimulation)
-      },
-      function(error, body) {
-        console.log(body);
-      }
-    );
-    res.send(newSimulation);
-  } catch (err) {
-    console.log(err);
-    res.status(400).send("Error during saving process");
+  if (
+    req.fields.goodType &&
+    req.fields.goodCondition &&
+    req.fields.goodUsage &&
+    req.fields.userSituation &&
+    req.fields.city &&
+    req.fields.email &&
+    req.fields.goodPrice &&
+    req.fields.buildingCosts &&
+    req.fields.charges &&
+    req.fields.total
+  ) {
+    const newSimulation = new Simulation({
+      goodType: req.fields.goodType,
+      goodCondition: req.fields.goodCondition,
+      goodUsage: req.fields.goodUsage,
+      userSituation: req.fields.userSituation,
+      city: req.fields.city,
+      email: req.fields.email,
+      goodPrice: req.fields.goodPrice,
+      buildingCosts: req.fields.buildingCosts,
+      charges: req.fields.charges,
+      total: req.fields.total,
+      tracking: generator.generate({
+        length: 8,
+        numbers: true,
+        uppercase: false,
+        exclude: "abcdefghijklmnopqrstuvwxyz"
+      })
+    });
+    try {
+      await newSimulation.save();
+      mg.messages().send(
+        {
+          from: "Mailgun Sandbox <postmaster@" + DOMAIN + ">",
+          to: newSimulation.email,
+          subject: "Simulation by tomaks",
+          text: JSON.stringify(newSimulation)
+        },
+        function(error, body) {
+          console.log(body);
+        }
+      );
+      res.send(newSimulation);
+    } catch (err) {
+      console.log(err);
+      res.status(400).send("Error during saving process");
+    }
+  } else {
+    res.status(400).send("Some parameters are missing");
   }
 });
 

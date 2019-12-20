@@ -4,6 +4,16 @@ const router = express.Router();
 //package to allow random number generation
 const generator = require("generate-password");
 
+//package to send mail
+const mailgun = require("mailgun-js");
+
+//Mailgun variables
+const API_KEY = "key-0e0307189be7ed0249cbb73e7909f8cf"; // L'API_KEY fourni par mailgun
+const DOMAIN = "mg.lereacteur.io"; // Le domaine fourni par mailgun
+
+//Setting mailgun with keys
+const mg = mailgun({ apiKey: API_KEY, domain: DOMAIN });
+
 //import Simulation model
 const Simulation = require("../Models/Simulation");
 

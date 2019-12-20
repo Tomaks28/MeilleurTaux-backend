@@ -6,17 +6,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const corsMiddleware = require("cors");
 const formidableMiddleware = require("express-formidable");
-const mailgun = require("mailgun-js");
-
-//Creation of express router
-const router = express.Router();
-
-//Mailgun variables
-const API_KEY = "key-0e0307189be7ed0249cbb73e7909f8cf"; // L'API_KEY fourni par mailgun
-const DOMAIN = "mg.lereacteur.io"; // Le domaine fourni par mailgun
-
-//Setting mailgun with keys
-const mg = mailgun({ apiKey: API_KEY, domain: DOMAIN });
 
 //creating app from express and placing middlewares
 const app = express();

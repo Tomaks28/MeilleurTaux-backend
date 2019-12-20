@@ -41,7 +41,7 @@ app.get("/backoffice", async (req, res) => {
     const simulations = await Simulation.find();
     res.send(simulations);
   } catch (err) {
-    res.status(400).send("Error during fetching process");
+    res.status(400).send({ message: "Error during fetching process" });
   }
 });
 
@@ -53,10 +53,10 @@ app.post("/save", async (req, res) => {
     req.fields.userSituation &&
     req.fields.city &&
     req.fields.email &&
-    req.fields.goodPrice &&
-    req.fields.buildingCosts &&
-    req.fields.charges &&
-    req.fields.total
+    req.fields.goodPrice !== undefined &&
+    req.fields.buildingCosts !== undefined &&
+    req.fields.charges !== undefined &&
+    req.fields.total !== undefined
   ) {
     const newSimulation = new Simulation({
       goodType: req.fields.goodType,
@@ -92,10 +92,10 @@ app.post("/save", async (req, res) => {
       res.send(newSimulation);
     } catch (err) {
       console.log(err);
-      res.status(400).send("Error during saving process");
+      res.status(400).send({ message: "Error during saving process" });
     }
   } else {
-    res.status(400).send("Some parameters are missing");
+    res.status(400).send({ message: "Some parameters are missing" });
   }
 });
 
@@ -106,15 +106,15 @@ app.post("/delete", async (req, res) => {
       await simulation.remove();
       res.send("Simulation deleted");
     } else {
-      res.status(400).send("Id not found");
+      res.status(400).send({ message: "Id not found" });
     }
   } catch (err) {
-    res.status(400).send("Error in ID");
+    res.status(400).send({ message: "Error in ID" });
   }
 });
 
 app.all("*", (req, res) => {
-  res.status(404).send("Page introuvable");
+  res.status(404).send({ message: "Page introuvable" });
 });
 
 // Remarquez que le `app.listen` doit se trouver après les déclarations des routes

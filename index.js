@@ -28,7 +28,7 @@ const Simulation = mongoose.model("simulation", {
   goodUsage: String,
   userSituation: String,
   city: String,
-  mail: String,
+  email: String,
   goodPrice: Number,
   buildingCosts: Number,
   charges: Number,

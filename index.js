@@ -1,123 +1,52 @@
 // La ligne suivante ne doit être utilisée qu'une seule fois et au tout début du projet. De préférence dans index.js
 require("dotenv").config(); // Permet d'activer les variables d'environnement qui se trouvent dans le fichier `.env`
 
+//import of all needed packages
 const express = require("express");
 const mongoose = require("mongoose");
 const corsMiddleware = require("cors");
 const formidableMiddleware = require("express-formidable");
 const generator = require("generate-password");
 const mailgun = require("mailgun-js");
-/************************************************************************************************/
+
+//Creation of express router
+const router = express.Router();
+
+//Mailgun variables
 const API_KEY = "key-0e0307189be7ed0249cbb73e7909f8cf"; // L'API_KEY fourni par mailgun
 const DOMAIN = "mg.lereacteur.io"; // Le domaine fourni par mailgun
-const mg = mailgun({ apiKey: API_KEY, domain: DOMAIN });
-/************************************************************************************************/
 
+//Setting mailgun with keys
+const mg = mailgun({ apiKey: API_KEY, domain: DOMAIN });
+
+//creating app from express and placing middlewares
 const app = express();
 app.use(corsMiddleware());
 app.use(formidableMiddleware());
 
+//Connect to mongoose DB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-const Simulation = mongoose.model("simulation", {
-  goodType: String,
-  goodCondition: String,
-  goodUsage: String,
-  userSituation: String,
-  city: String,
-  email: String,
-  goodPrice: Number,
-  buildingCosts: Number,
-  charges: Number,
-  total: Number,
-  tracking: String
-});
+//import Simulation model
+require("./Models/Simulation");
 
-app.get("/backoffice", async (req, res) => {
-  try {
-    const simulations = await Simulation.find();
-    res.send(simulations);
-  } catch (err) {
-    res.status(400).send({ message: "Error during fetching process" });
-  }
-});
+//importing backoffice routes
+const backOfficeRoute = require("./Routes/backoffice");
+app.use(backOfficeRoute);
 
-app.post("/save", async (req, res) => {
-  if (
-    req.fields.goodType &&
-    req.fields.goodCondition &&
-    req.fields.goodUsage &&
-    req.fields.userSituation &&
-    req.fields.city &&
-    req.fields.email &&
-    req.fields.goodPrice !== undefined &&
-    req.fields.buildingCosts !== undefined &&
-    req.fields.charges !== undefined &&
-    req.fields.total !== undefined
-  ) {
-    const newSimulation = new Simulation({
-      goodType: req.fields.goodType,
-      goodCondition: req.fields.goodCondition,
-      goodUsage: req.fields.goodUsage,
-      userSituation: req.fields.userSituation,
-      city: req.fields.city,
-      email: req.fields.email,
-      goodPrice: req.fields.goodPrice,
-      buildingCosts: req.fields.buildingCosts,
-      charges: req.fields.charges,
-      total: req.fields.total,
-      tracking: generator.generate({
-        length: 8,
-        numbers: true,
-        uppercase: false,
-        exclude: "abcdefghijklmnopqrstuvwxyz"
-      })
-    });
-    try {
-      await newSimulation.save();
-      mg.messages().send(
-        {
-          from: "Mailgun Sandbox <postmaster@" + DOMAIN + ">",
-          to: newSimulation.email,
-          subject: "Simulation by tomaks",
-          text: JSON.stringify(newSimulation)
-        },
-        function(error, body) {
-          console.log(body);
-        }
-      );
-      res.send(newSimulation);
-    } catch (err) {
-      console.log(err);
-      res.status(400).send({ message: "Error during saving process" });
-    }
-  } else {
-    res.status(400).send({ message: "Some parameters are missing" });
-  }
-});
+//importing simulation routes
+const simulationRoute = require("./Routes/simulation");
+app.use(simulationRoute);
 
-app.post("/delete", async (req, res) => {
-  try {
-    const simulation = await Simulation.findOne({ _id: req.fields.id });
-    if (simulation) {
-      await simulation.remove();
-      res.send("Simulation deleted");
-    } else {
-      res.status(400).send({ message: "Id not found" });
-    }
-  } catch (err) {
-    res.status(400).send({ message: "Error in ID" });
-  }
-});
-
+//By default all undefined routes are redirected here
 app.all("*", (req, res) => {
   res.status(404).send({ message: "Page introuvable" });
 });
 
-// Remarquez que le `app.listen` doit se trouver après les déclarations des routes
+//Sarting the server
 app.listen(process.env.PORT, () => {
   console.log("Server has started");
 });

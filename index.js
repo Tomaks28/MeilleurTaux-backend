@@ -30,9 +30,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true
 });
 
-//import Simulation model
-require("./Models/Simulation");
-
 //importing backoffice routes
 const backOfficeRoute = require("./Routes/backoffice");
 app.use(backOfficeRoute);

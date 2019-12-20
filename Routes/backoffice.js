@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+//import Simulation model
+const Simulation = require("./Models/Simulation");
+
 //Create route to backoffice
 router.get("/backoffice", async (req, res) => {
   try {

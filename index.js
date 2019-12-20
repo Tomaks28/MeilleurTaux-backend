@@ -6,7 +6,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const corsMiddleware = require("cors");
 const formidableMiddleware = require("express-formidable");
-const generator = require("generate-password");
 const mailgun = require("mailgun-js");
 
 //Creation of express router

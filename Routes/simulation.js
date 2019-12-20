@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+//package to allow random number generation
+const generator = require("generate-password");
+
 //import Simulation model
 const Simulation = require("../Models/Simulation");
 
